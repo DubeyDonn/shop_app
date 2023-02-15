@@ -48,7 +48,16 @@ class ProductItem extends StatelessWidget {
                       onPressed: null,
                     ),
                   )
-                : const Icon(Icons.shopping_cart_outlined),
+                : CartBadge(
+                    value: 0.toString(),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.shopping_cart,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      onPressed: null,
+                    ),
+                  ),
             color: Theme.of(context).colorScheme.secondary,
           ),
         ),
