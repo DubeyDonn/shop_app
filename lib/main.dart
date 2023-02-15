@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/provider/cart.dart';
+import 'package:shop_app/provider/products_provider.dart';
+import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
 
 import 'screens/product_details_screen.dart';
@@ -12,27 +16,37 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'shop App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        colorScheme: const ColorScheme.light().copyWith(
-          secondary: Colors.deepOrange,
-        ),
-        fontFamily: 'Lato',
-        textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: const TextStyle(
-                fontSize: 20,
-                fontFamily: 'Lato',
-                fontWeight: FontWeight.bold,
-              ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (BuildContext context) {
+          return ProductsProvider();
+        }),
+        ChangeNotifierProvider(create: (BuildContext context) {
+          return Cart();
+        }),
+      ],
+      child: MaterialApp(
+          title: 'shop App',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            colorScheme: const ColorScheme.light().copyWith(
+              secondary: Colors.deepOrange,
             ),
-      ),
-      home: const ProductsOverviewScreen(),
-      routes: {
-        ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
-      }
+            fontFamily: 'Lato',
+            textTheme: ThemeData.light().textTheme.copyWith(
+                  titleLarge: const TextStyle(
+                    fontSize: 20,
+                    fontFamily: 'Lato',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+          ),
+          home: const ProductsOverviewScreen(),
+          routes: {
+            ProductDetailsScreen.routeName: (ctx) =>
+                const ProductDetailsScreen(),
+            CartScreen.routeName: (context) => const CartScreen(),
+          }),
     );
   }
 }
-
