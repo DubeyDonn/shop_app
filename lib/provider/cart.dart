@@ -45,6 +45,11 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
+  void clear() {
+    _items.clear();
+    notifyListeners();
+  }
+
   void _updateItemQuantity(int val, String productId) {
     _items.update(
       productId,

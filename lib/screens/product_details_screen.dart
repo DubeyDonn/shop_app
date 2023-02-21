@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/provider/products_provider.dart';
+import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/widgets/cart_badge.dart';
 
 import '../provider/cart.dart';
+import '../widgets/app_drawer.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   // final String title;
@@ -29,8 +31,36 @@ class ProductDetailsScreen extends StatelessWidget {
     ).findById(id);
 
     return Scaffold(
+        drawer: const AppDrawer(),
         appBar: AppBar(
           title: Text(product.title),
+          actions: [
+            Container(
+              padding: const EdgeInsets.only(
+                right: 8,
+                top: 8,
+                bottom: 8,
+                left: 0,
+              ),
+              child: Consumer<Cart>(
+                builder: (context, value, ch) => CartBadge(
+                  value: cart.itemCount.toString(),
+                  color: Colors.orange,
+                  child: ch!,
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.shopping_cart,
+                    color: Colors.white,
+                  ),
+                  // ignore: avoid_returning_null_for_void
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(CartScreen.routeName);
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(

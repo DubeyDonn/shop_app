@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/provider/cart.dart';
 import 'package:shop_app/screens/cart_screen.dart';
+import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/cart_badge.dart';
 
 import '../widgets/products_overview_gridview.dart';
@@ -24,6 +25,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   Widget build(BuildContext context) {
     var cartItemCount = Provider.of<Cart>(context).itemCount;
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('Shop App'),
         actions: [
@@ -74,7 +76,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
       body: BuildProductsOverviewGridview(_showFav),
