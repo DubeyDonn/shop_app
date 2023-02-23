@@ -2,15 +2,6 @@
 
 A Flutter project for simple Shopoing App Demonstration.
 
-## Getting Started
+## Preview
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![331480867_926914595006654_4389786701519086726_n](https://user-images.githubusercontent.com/85961517/220824858-5ca972e6-e095-4b61-a2a9-c4bf67cefdde.jpg)
