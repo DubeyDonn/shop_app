@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/provider/orders.dart' as ord;
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
 class OrderItem extends StatefulWidget {

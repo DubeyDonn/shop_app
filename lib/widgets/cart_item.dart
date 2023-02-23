@@ -5,12 +5,12 @@ import '../provider/cart.dart';
 import '../screens/product_details_screen.dart';
 
 class CartItem extends StatelessWidget {
-  String id;
-  double price;
-  String title;
-  int quantity;
-  String productId;
-  CartItem({
+  final String id;
+  final double price;
+  final String title;
+  final int quantity;
+  final String productId;
+  const CartItem({
     required this.id,
     required this.price,
     required this.title,
