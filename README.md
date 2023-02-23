@@ -1,6 +1,6 @@
 # shop_app
 
-A new Flutter project.
+A Flutter project for simple Shopoing App Demonstration.
 
 ## Getting Started
 
