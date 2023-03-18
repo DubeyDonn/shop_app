@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/provider/cart.dart';
+import 'package:shop_app/provider/products_provider.dart';
 import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/cart_badge.dart';
@@ -21,6 +22,50 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showFav = false;
+  var _isInit = true;
+  var _isLoading = false;
+  var _isUnavailable = false;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<ProductsProvider>(context)
+          .FetchAndSetProducts()
+          .catchError((error) {
+        // showDialog<void>(
+        //   context: context,
+        //   builder: (ctx) => AlertDialog(
+        //     title: const Text('An error occurred!'),
+        //     content: const Text('No products available.'),
+        //     actions: [
+        //       TextButton(
+        //         onPressed: () {
+        //           setState(() {
+        _isUnavailable = true;
+        //             Navigator.of(context).pop();
+        //           });
+        //         },
+        //         child: const Text('Okay'),
+        //       ),
+        //     ],
+        //   ),
+        // );
+      }).then(
+        (value) => setState(
+          () {
+            _isLoading = false;
+          },
+        ),
+      );
+    }
+
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     var cartItemCount = Provider.of<Cart>(context).itemCount;
@@ -79,7 +124,15 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ),
         ],
       ),
-      body: BuildProductsOverviewGridview(_showFav),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : (_isUnavailable
+              ? const Center(
+                  child: Text('No products available.'),
+                )
+              : BuildProductsOverviewGridview(_showFav)),
     );
   }
 }

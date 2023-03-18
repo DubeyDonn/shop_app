@@ -6,15 +6,33 @@ import 'package:shop_app/widgets/manage_product_item.dart';
 
 import '../provider/products_provider.dart';
 
-class ManageProductScreen extends StatefulWidget {
+class ManageProductScreen extends StatelessWidget {
   static const routeName = '/manage-product';
   const ManageProductScreen({super.key});
 
-  @override
-  State<ManageProductScreen> createState() => _ManageProductState();
-}
+  Future<void> _refreshPage(BuildContext context) async {
+    try {
+      await Provider.of<ProductsProvider>(context, listen: false)
+          .FetchAndSetProducts();
+    } catch (error) {
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('An error occurred!'),
+          content: const Text('No products available.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
-class _ManageProductState extends State<ManageProductScreen> {
   @override
   Widget build(BuildContext context) {
     var product = Provider.of<ProductsProvider>(context).items;
@@ -23,16 +41,19 @@ class _ManageProductState extends State<ManageProductScreen> {
         appBar: AppBar(
           title: const Text('Manage Product'),
         ),
-        body: ListView.builder(
-          itemCount: product.length,
-          itemBuilder: (context, index) {
-            return ManageProductItem(
-              image: product[index].imageUrl,
-              title: product[index].title,
-              price: product[index].price,
-              productId: product[index].id,
-            );
-          },
+        body: RefreshIndicator(
+          onRefresh: () => _refreshPage(context),
+          child: ListView.builder(
+            itemCount: product.length,
+            itemBuilder: (context, index) {
+              return ManageProductItem(
+                image: product[index].imageUrl,
+                title: product[index].title,
+                price: product[index].price,
+                productId: product[index].id,
+              );
+            },
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
