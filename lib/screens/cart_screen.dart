@@ -39,17 +39,7 @@ class CartScreen extends StatelessWidget {
                       ),
                       backgroundColor: Theme.of(context).primaryColor,
                     ),
-                    TextButton(
-                      onPressed: () {
-                        if (cart.items.isEmpty) return;
-                        Provider.of<Orders>(context, listen: false).addOrder(
-                          cart.items.values.toList(),
-                          cart.totalAmount,
-                        );
-                        cart.clear();
-                      },
-                      child: const Text('Order Now'),
-                    )
+                    OrderButton(cart: cart),
                   ],
                 ),
               ),
@@ -71,5 +61,48 @@ class CartScreen extends StatelessWidget {
             )
           ],
         ));
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    super.key,
+    required this.cart,
+  });
+
+  final Cart cart;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  var _isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: (widget.cart.items.isEmpty || _isLoading)
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+              
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                widget.cart.items.values.toList(),
+                widget.cart.totalAmount,
+              );
+              setState(() {
+                _isLoading = false;
+              });
+              
+              widget.cart.clear();
+            },
+      child: _isLoading
+          ? const CircularProgressIndicator()
+          : widget.cart.items.isEmpty
+              ? const Text('Order Now', style: TextStyle(color: Colors.grey))
+              : const Text('Order Now', style: TextStyle(color: Colors.green)),
+    );
   }
 }

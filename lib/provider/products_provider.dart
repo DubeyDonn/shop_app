@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/provider/product.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
@@ -43,6 +44,11 @@ class ProductsProvider with ChangeNotifier {
     // ),
   ];
 
+  final String? authToken;
+  final String? userId;
+
+  ProductsProvider(this.authToken, this.userId, this._items);
+
   List<Product> get items {
     return [..._items];
   }
@@ -55,15 +61,41 @@ class ProductsProvider with ChangeNotifier {
     return items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> FetchAndSetProducts() async {
+  Future<void> fetchAndSetProducts([bool showAll = false]) async {
+    bool filterByUser = showAll ? false : true;
+    String filterString =
+        filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url = Uri.parse(
-        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products.json');
+        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString');
 
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      // print(extractedData);
+      if (extractedData.isEmpty) {
+        return;
+      }
+
+      url = Uri.parse(
+          'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/user-favourites/$userId.json?auth=$authToken');
+
+      final favouriteResponse = await http.get(url);
+
+      final favouriteData = json.decode(favouriteResponse.body);
       final List<Product> loadedProducts = [];
+      if (extractedData.isEmpty) {
+        return;
+      }
+
+      // var prefs = await SharedPreferences.getInstance();
+      // final productData = json.encode({
+      //   'products': extractedData,
+      //   'favourites': favouriteData,
+      // });
+      // prefs.setString('productData', productData);
+      // final localProductData =
+      //     json.decode(prefs.getString('productData')!) as Map<String, dynamic>;
+      // print(localProductData);
+
       extractedData.forEach((productId, productData) {
         loadedProducts.add(Product(
           id: productId,
@@ -71,7 +103,8 @@ class ProductsProvider with ChangeNotifier {
           description: productData['description'],
           price: productData['price'],
           imageUrl: productData['imageUrl'],
-          isFavourite: productData['isFavourite'],
+          isFavourite:
+              favouriteData == null ? false : favouriteData[productId] ?? false,
         ));
       });
       // print(loadedProducts);
@@ -85,7 +118,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> addItems(Product newProduct) async {
     var url = Uri.parse(
-        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products.json');
+        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products.json?auth=$authToken');
 
     try {
       var response = await http.post(
@@ -96,7 +129,7 @@ class ProductsProvider with ChangeNotifier {
             'description': newProduct.description,
             'price': newProduct.price,
             'imageUrl': newProduct.imageUrl,
-            'isFavourite': newProduct.isFavourite,
+            'creatorId': userId,
           },
         ),
       );
@@ -111,14 +144,13 @@ class ProductsProvider with ChangeNotifier {
       _items.add(addThis);
       notifyListeners();
     } catch (error) {
-      print(error);
       rethrow;
     }
   }
 
   Future<void> deleteItems(String id) async {
     var url = Uri.parse(
-        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products/$id.json');
+        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
 
     final existingProductIndex =
         _items.indexWhere((element) => element.id == id);
@@ -136,7 +168,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> updateProduct(String id, Product newProduct) async {
     var url = Uri.parse(
-        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products/$id.json');
+        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken');
 
     try {
       await http.patch(url,

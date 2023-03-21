@@ -4,6 +4,7 @@ import 'package:shop_app/provider/cart.dart';
 import 'package:shop_app/provider/product.dart';
 import 'package:shop_app/widgets/cart_badge.dart';
 
+import '../provider/auth.dart';
 import '../screens/product_details_screen.dart';
 
 class ProductItem extends StatelessWidget {
@@ -12,16 +13,33 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
+    
     final cart = Provider.of<Cart>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         footer: GridTileBar(
           backgroundColor: Colors.black87,
-          leading: Consumer<Product>(
+          leading: 
+          Consumer<Product>(
             builder: (ctx_, products, Widget? _) {
               return IconButton(
-                onPressed: products.toggleFavourite,
+                onPressed: () async {
+                  try {
+                    await products.toggleFavourite( 
+                      auth.token,
+                      auth.userId,);
+                  } catch (error) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(error.toString()),
+                      ),
+                    );
+                  }
+                  
+                },
                 icon: products.isFavourite
                     ? const Icon(Icons.favorite)
                     : const Icon(Icons.favorite_border),

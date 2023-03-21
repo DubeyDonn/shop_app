@@ -14,6 +14,7 @@ enum FilterGrid {
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
+  static const routeName = '/products-overview';
   const ProductsOverviewScreen({super.key});
 
   @override
@@ -33,7 +34,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         _isLoading = true;
       });
       Provider.of<ProductsProvider>(context)
-          .FetchAndSetProducts()
+          .fetchAndSetProducts(true)
           .catchError((error) {
         // showDialog<void>(
         //   context: context,

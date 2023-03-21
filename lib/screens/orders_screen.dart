@@ -5,9 +5,37 @@ import 'package:shop_app/widgets/order_item.dart' as ord;
 
 import '../provider/orders.dart';
 
-class OrderScreen extends StatelessWidget {
+class OrderScreen extends StatefulWidget {
   static const routeName = '/orders';
   const OrderScreen({super.key});
+
+  @override
+  State<OrderScreen> createState() => _OrderScreenState();
+}
+
+class _OrderScreenState extends State<OrderScreen> {
+  var _isLoading = false;
+  var _isUnavailable = false;
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero).then((_) async {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<Orders>(context, listen: false)
+          .fetchAndSetOrders()
+          .catchError((error) {
+        setState(() {
+          _isUnavailable = true;
+        });
+      });
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,18 +45,22 @@ class OrderScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Your Orders'),
       ),
-      body: orders.isEmpty
+      body: _isLoading
           ? const Center(
-              child: Text('No orders yet!'),
+              child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                return ord.OrderItem(
-                  order: orders[index],
-                );
-              },
-            ),
+          : (orders.isEmpty || _isUnavailable)
+              ? const Center(
+                  child: Text('No orders yet!'),
+                )
+              : ListView.builder(
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    return ord.OrderItem(
+                      order: orders[index],
+                    );
+                  },
+                ),
     );
   }
 }

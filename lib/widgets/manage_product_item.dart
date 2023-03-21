@@ -59,6 +59,7 @@ class ManageProductItem extends StatelessWidget {
                                     listen: false)
                                 .deleteItems(productId);
                           } catch (error) {
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -68,6 +69,7 @@ class ManageProductItem extends StatelessWidget {
                             );
                           }
 
+                          // ignore: use_build_context_synchronously
                           Navigator.of(ctx).pop(true);
                         },
                         child: const Text('Yes'),
