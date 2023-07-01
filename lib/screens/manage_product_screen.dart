@@ -24,7 +24,7 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
         _isLoading = true;
       });
       await Provider.of<ProductsProvider>(context, listen: false)
-          .fetchAndSetProducts()
+          .fetchAndSetProducts(true)
           .catchError((error) {
         setState(() {
           _isUnavailable = true;
@@ -41,7 +41,7 @@ class _ManageProductScreenState extends State<ManageProductScreen> {
   Future<void> _refreshPage(BuildContext context) async {
     try {
       await Provider.of<ProductsProvider>(context, listen: false)
-          .fetchAndSetProducts();
+          .fetchAndSetProducts(true);
     } catch (error) {
       await showDialog<void>(
         context: context,

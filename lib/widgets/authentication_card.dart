@@ -16,7 +16,6 @@ class AuthCard extends StatefulWidget {
 class AuthCardState extends State<AuthCard>
     with SingleTickerProviderStateMixin {
   AnimationController? _controller;
-  Animation<Size>? _heightAnimation;
   Animation<double>? _opacityAnimation;
   Animation<Offset>? _slideAnimation;
 
@@ -34,15 +33,6 @@ class AuthCardState extends State<AuthCard>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
-    );
-    _heightAnimation = Tween<Size>(
-      begin: const Size(double.infinity, 260),
-      end: const Size(double.infinity, 320),
-    ).animate(
-      CurvedAnimation(
-        parent: _controller!,
-        curve: Curves.linear,
-      ),
     );
     _opacityAnimation = Tween<double>(
       begin: 0.0,

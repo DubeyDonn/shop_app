@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/provider/product.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
@@ -61,8 +60,7 @@ class ProductsProvider with ChangeNotifier {
     return items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> fetchAndSetProducts([bool showAll = false]) async {
-    bool filterByUser = showAll ? false : true;
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
     String filterString =
         filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     var url = Uri.parse(
@@ -141,6 +139,7 @@ class ProductsProvider with ChangeNotifier {
         price: newProduct.price,
         imageUrl: newProduct.imageUrl,
       );
+      
       _items.add(addThis);
       notifyListeners();
     } catch (error) {
