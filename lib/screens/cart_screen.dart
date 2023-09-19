@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/provider/cart.dart' show Cart;
+import 'package:shop_app/screens/auth_screen.dart';
 import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/cart_item.dart';
 
+import '../provider/auth.dart';
 import '../provider/orders.dart';
 
 class CartScreen extends StatelessWidget {
@@ -13,6 +15,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var cart = Provider.of<Cart>(context);
+
     // var product = Provider.of<ProductsProvider>(context).items;
     return Scaffold(
         drawer: const AppDrawer(),
@@ -78,8 +81,12 @@ class OrderButton extends StatefulWidget {
 
 class _OrderButtonState extends State<OrderButton> {
   var _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
+    var auth = Provider.of<Auth>(context);
+    var userId = auth.userId;
+    var token = auth.token;
     return TextButton(
       onPressed: (widget.cart.items.isEmpty || _isLoading)
           ? null
@@ -87,7 +94,24 @@ class _OrderButtonState extends State<OrderButton> {
               setState(() {
                 _isLoading = true;
               });
-              
+              if (token.isEmpty || userId.isEmpty) {
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: const Text('Please log in to continue.'),
+                      action: SnackBarAction(
+                        label: 'Login',
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(AuthScreen.routeName);
+                        },
+                      )),
+                );
+                setState(() {
+                  _isLoading = false;
+                });
+                return;
+              }
+
               await Provider.of<Orders>(context, listen: false).addOrder(
                 widget.cart.items.values.toList(),
                 widget.cart.totalAmount,
@@ -95,7 +119,7 @@ class _OrderButtonState extends State<OrderButton> {
               setState(() {
                 _isLoading = false;
               });
-              
+
               widget.cart.clear();
             },
       child: _isLoading

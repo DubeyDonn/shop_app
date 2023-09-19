@@ -15,6 +15,9 @@ class ProductItem extends StatelessWidget {
     final product = Provider.of<Product>(context, listen: false);
     final auth = Provider.of<Auth>(context, listen: false);
 
+    var userId = auth.userId;
+    var token = auth.token;
+
     final cart = Provider.of<Cart>(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -23,27 +26,41 @@ class ProductItem extends StatelessWidget {
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
             builder: (ctx_, products, Widget? _) {
-              return IconButton(
-                onPressed: () async {
-                  try {
-                    await products.toggleFavourite(
-                      auth.token,
-                      auth.userId,
-                    );
-                  } catch (error) {
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(error.toString()),
-                      ),
-                    );
-                  }
-                },
-                icon: products.isFavourite
-                    ? const Icon(Icons.favorite)
-                    : const Icon(Icons.favorite_border),
-                color: Theme.of(context).colorScheme.secondary,
-              );
+              return (userId.isNotEmpty || token.isNotEmpty
+                  ? IconButton(
+                      onPressed: () async {
+                        try {
+                          await products.toggleFavourite(
+                            auth.token,
+                            auth.userId,
+                          );
+                        } catch (error) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(error.toString()),
+                            ),
+                          );
+                        }
+                      },
+                      icon: products.isFavourite
+                          ? const Icon(Icons.favorite)
+                          : const Icon(Icons.favorite_border),
+                      color: Theme.of(context).colorScheme.secondary,
+                    )
+                  : IconButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please login to add to favourites'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.favorite_border),
+                      color: Theme.of(context).colorScheme.secondary,
+                    ));
             },
           ),
           title: Text(
