@@ -12,7 +12,7 @@ import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
 
 import 'screens/product_details_screen.dart';
-import 'screens/splash-screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());

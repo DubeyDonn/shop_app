@@ -75,8 +75,8 @@ class AuthCardState extends State<AuthCard>
 
   void _submit(BuildContext context) async {
     var auth = Provider.of<Auth>(context, listen: false);
-    var userId = auth.userId;
-    var token = auth.token;
+    // var userId = auth.userId;
+    // var token = auth.token;
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;

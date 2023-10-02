@@ -113,7 +113,7 @@ class ProductsProvider with ChangeNotifier {
 
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
 
-      final List<dynamic> allProducts = extractedData.values.toList();
+      // final List<dynamic> allProducts = extractedData.values.toList();
 
       if (extractedData.isEmpty) {
         _items = [];

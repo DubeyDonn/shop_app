@@ -81,10 +81,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<ProductsProvider>(context);
-    final searching = productsData.isSearching;
-    print("searching$searching");
-    print("search:$isSearching");
+   
     var auth = Provider.of<Auth>(context);
     var userId = auth.userId;
     var token = auth.token;

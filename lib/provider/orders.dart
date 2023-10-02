@@ -63,8 +63,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-    print(userId);
-    print(token);
+   
     var url = Uri.parse(
         'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/orders/$userId.json?auth=$token');
     try {
