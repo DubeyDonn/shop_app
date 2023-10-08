@@ -189,8 +189,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const SizedBox(height: 8),
                   if (_isLoading)
                     const CircularProgressIndicator()
-                  else if (_isUnavailable)
-                    const Text('Error loading shipping addresses.')
                   else
                     buildShippingAddressSection(), // Use the method to display the addresses
                 ],
