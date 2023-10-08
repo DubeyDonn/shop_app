@@ -17,6 +17,11 @@ class _OrderScreenState extends State<OrderScreen> {
   var _isLoading = false;
   var _isUnavailable = false;
 
+  // Function to refresh orders
+  void refreshOrders() {
+    setState(() {});
+  }
+
   @override
   void initState() {
     Future.delayed(Duration.zero).then((_) async {
@@ -58,6 +63,8 @@ class _OrderScreenState extends State<OrderScreen> {
                   itemBuilder: (context, index) {
                     return ord.OrderItem(
                       order: orders[index],
+                      onOrderCancelled:
+                          refreshOrders, // Pass the callback function
                     );
                   },
                 ),

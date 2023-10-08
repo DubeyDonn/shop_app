@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_app/provider/cart.dart' show Cart;
 import 'package:shop_app/screens/auth_screen.dart';
+import 'package:shop_app/screens/checkout_screen.dart';
 import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/cart_item.dart';
 
 import '../provider/auth.dart';
-import '../provider/orders.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart_screen';
@@ -42,7 +42,7 @@ class CartScreen extends StatelessWidget {
                       ),
                       backgroundColor: Theme.of(context).primaryColor,
                     ),
-                    OrderButton(cart: cart),
+                    CheckoutButton(cart: cart),
                   ],
                 ),
               ),
@@ -67,8 +67,8 @@ class CartScreen extends StatelessWidget {
   }
 }
 
-class OrderButton extends StatefulWidget {
-  const OrderButton({
+class CheckoutButton extends StatefulWidget {
+  const CheckoutButton({
     super.key,
     required this.cart,
   });
@@ -76,10 +76,10 @@ class OrderButton extends StatefulWidget {
   final Cart cart;
 
   @override
-  State<OrderButton> createState() => _OrderButtonState();
+  State<CheckoutButton> createState() => _CheckoutButtonState();
 }
 
-class _OrderButtonState extends State<OrderButton> {
+class _CheckoutButtonState extends State<CheckoutButton> {
   var _isLoading = false;
 
   @override
@@ -95,7 +95,6 @@ class _OrderButtonState extends State<OrderButton> {
                 _isLoading = true;
               });
               if (token.isEmpty || userId.isEmpty) {
-                
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                       content: const Text('Please log in to continue.'),
@@ -112,21 +111,28 @@ class _OrderButtonState extends State<OrderButton> {
                 return;
               }
 
-              await Provider.of<Orders>(context, listen: false).addOrder(
-                widget.cart.items.values.toList(),
-                widget.cart.totalAmount,
-              );
+              // await Provider.of<Orders>(context, listen: false).addOrder(
+              //   widget.cart.items.values.toList(),
+              //   widget.cart.totalAmount,
+              // );
+
+              // widget.cart.clear();
+              //navigate to checkout screen with cart data
+
+
+              Navigator.of(context).pushNamed(CheckoutScreen.routeName,
+                  arguments: {'cart': widget.cart.items.values.toList(),
+                  'totalAmount': widget.cart.totalAmount});
+
               setState(() {
                 _isLoading = false;
               });
-
-              widget.cart.clear();
             },
       child: _isLoading
           ? const CircularProgressIndicator()
           : widget.cart.items.isEmpty
-              ? const Text('Order Now', style: TextStyle(color: Colors.grey))
-              : const Text('Order Now', style: TextStyle(color: Colors.green)),
+              ? const Text('Checkout', style: TextStyle(color: Colors.grey))
+              : const Text('Checkout', style: TextStyle(color: Colors.green)),
     );
   }
 }

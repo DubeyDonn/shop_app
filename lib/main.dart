@@ -4,12 +4,15 @@ import 'package:shop_app/provider/auth.dart';
 import 'package:shop_app/provider/cart.dart';
 import 'package:shop_app/provider/orders.dart';
 import 'package:shop_app/provider/products_provider.dart';
+import 'package:shop_app/provider/shipping_info.dart';
+import 'package:shop_app/screens/add_shipping_address_screen.dart';
 import 'package:shop_app/screens/auth_screen.dart';
 import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/screens/edit_add_product_screen.dart';
 import 'package:shop_app/screens/manage_product_screen.dart';
 import 'package:shop_app/screens/orders_screen.dart';
 import 'package:shop_app/screens/products_overview_screen.dart';
+import 'package:shop_app/screens/checkout_screen.dart';
 
 import 'screens/product_details_screen.dart';
 import 'screens/splash_screen.dart';
@@ -61,6 +64,20 @@ class MyApp extends StatelessWidget {
         // ChangeNotifierProvider(create: (BuildContext context) {
         //   return Orders();
         // }),
+
+        ChangeNotifierProxyProvider<Auth, ShippingInfoProvider>(
+          create: (BuildContext context) {
+            return ShippingInfoProvider('', '', []);
+          },
+          update:
+              (BuildContext context, Auth auth, ShippingInfoProvider? prev) {
+            return ShippingInfoProvider(
+              auth.token,
+              auth.userId,
+              prev == null ? [] : prev.items,
+            );
+          },
+        ),
       ],
       child: Consumer<Auth>(
         builder: (BuildContext context, Auth auth, Widget? _) {
@@ -108,8 +125,9 @@ class MyApp extends StatelessWidget {
               EditAddProductScreen.routeName: (context) =>
                   const EditAddProductScreen(),
               AuthScreen.routeName: (context) => const AuthScreen(),
-              // ProductsSearchScreen.routeName: (context) =>
-              //     const ProductsSearchScreen(),
+              CheckoutScreen.routeName: (context) => const CheckoutScreen(),
+              AddShippingAddressScreen.routeName: (context) =>
+                  AddShippingAddressScreen(),
             },
           );
         },

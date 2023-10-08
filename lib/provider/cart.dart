@@ -40,6 +40,8 @@ class Cart with ChangeNotifier {
     return total;
   }
 
+  
+
   void removeItem(String productId) {
     _items.remove(productId);
     notifyListeners();
@@ -77,11 +79,7 @@ class Cart with ChangeNotifier {
     } else {
       _items.putIfAbsent(
         productId,
-        () => CartItem(
-            id: productId,
-            price: price,
-            quantity: 1,
-            title: title),
+        () => CartItem(id: productId, price: price, quantity: 1, title: title),
       );
     }
 

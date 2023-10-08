@@ -67,11 +67,27 @@ class ProductDetailsScreen extends StatelessWidget {
             expandedHeight: 250,
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                product.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
+              titlePadding:
+                  const EdgeInsets.only(left: 0, bottom: 25, right: 40),
+              title: Container(
+                height: 40,
+                padding: const EdgeInsets.only(left: 15),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    )),
+                alignment: Alignment.center,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    product.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
               ),
               background: Hero(

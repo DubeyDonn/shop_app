@@ -3,17 +3,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shop_app/provider/cart.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_app/provider/shipping_info.dart';
 
 class OrderItem {
   final String id;
   final double amount;
   final List<CartItem> products;
+  final ShippingInfo shippingInfo;
+  final String paymentMethod;
   final DateTime dateTime;
 
   OrderItem({
     required this.id,
     required this.amount,
     required this.products,
+    required this.shippingInfo,
+    required this.paymentMethod,
     required this.dateTime,
   });
 }
@@ -29,7 +34,8 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  Future<void> addOrder(List<CartItem> cartProducts, double total) async {
+  Future<void> addOrder(List<CartItem> cartProducts, double total,
+      ShippingInfo shippingInfo, String paymentMethod) async {
     var url = Uri.parse(
         'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/orders/$userId.json?auth=$token');
     var timeStamp = DateTime.now();
@@ -38,6 +44,14 @@ class Orders with ChangeNotifier {
           body: json.encode({
             'amount': total,
             'dateTime': timeStamp.toIso8601String(),
+            'shippingInfo': {
+              'id': shippingInfo.id,
+              'fullName': shippingInfo.fullName,
+              'address': shippingInfo.address,
+              'city': shippingInfo.city,
+              'mobileNumber': shippingInfo.mobileNumber,
+            },
+            'paymentMethod': paymentMethod,
             'products': cartProducts
                 .map((cp) => {
                       'id': cp.id,
@@ -52,7 +66,9 @@ class Orders with ChangeNotifier {
         OrderItem(
           id: json.decode(response.body)['name'],
           amount: total,
+          shippingInfo: shippingInfo,
           products: cartProducts,
+          paymentMethod: paymentMethod,
           dateTime: timeStamp,
         ),
       );
@@ -63,7 +79,6 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-   
     var url = Uri.parse(
         'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/orders/$userId.json?auth=$token');
     try {
@@ -76,6 +91,14 @@ class Orders with ChangeNotifier {
       extractedData.forEach((orderId, orderData) {
         loadedOrders.add(OrderItem(
           id: orderId,
+          shippingInfo: ShippingInfo(
+            id: orderData['shippingInfo']['id'],
+            fullName: orderData['shippingInfo']['fullName'],
+            address: orderData['shippingInfo']['address'],
+            city: orderData['shippingInfo']['city'],
+            mobileNumber: orderData['shippingInfo']['mobileNumber'],
+          ),
+          paymentMethod: orderData['paymentMethod'],
           amount: orderData['amount'],
           dateTime: DateTime.parse(orderData['dateTime']),
           products: (orderData['products'] as List<dynamic>)
@@ -93,5 +116,30 @@ class Orders with ChangeNotifier {
     } catch (error) {
       rethrow;
     }
+  }
+
+  Future<void> deleteOrder(String id) {
+    var url = Uri.parse(
+        'https://flutter-shop-app-2ab59-default-rtdb.firebaseio.com/orders/$userId/$id.json?auth=$token');
+    var existingOrderIndex = _orders.indexWhere((order) => order.id == id);
+    var existingOrder = _orders[existingOrderIndex];
+    _orders.removeAt(existingOrderIndex);
+    notifyListeners();
+    return http.delete(url).then((response) {
+      if (response.statusCode >= 400) {
+        throw Exception('Could not delete product.');
+      }
+      existingOrder = OrderItem(
+        id: '',
+        amount: existingOrder.amount,
+        shippingInfo: existingOrder.shippingInfo,
+        products: existingOrder.products,
+        paymentMethod: existingOrder.paymentMethod,
+        dateTime: existingOrder.dateTime,
+      );
+    }).catchError((_) {
+      _orders.insert(existingOrderIndex, existingOrder);
+      notifyListeners();
+    });
   }
 }
